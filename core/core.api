@@ -1,0 +1,232 @@
+service core-api {
+	// 用户登录
+	@handler UserLogin
+	post /user/login(LoginRequest) returns (LoginResponse)
+	
+	// 用户详情
+	@handler UserDetail
+	get /user/detail(UserDetailRequest) returns(UserDetailResponse)
+	
+	// 发送邮箱验证码 - 注册
+	@handler MailCodeSendRegister
+	post /mail/code/send/register(MailCodeSendRequest) returns(MailCodeSendResponse)
+	
+	// 用户注册
+	@handler UserRegister
+	post /user/register(UserRegisterRequest) returns(UserRegisterResponse)
+	
+	// 获取资源详情
+	@handler ShareBasicDetail
+	get /share/basic/detail(ShareBasicDetailRequest) returns(ShareBasicDetailResponse)
+}
+
+@server (
+	middleware: Auth
+)
+service core-api{
+	// 文件上传
+	@handler FileUpload
+	post /file/upload(FileUploadRequest) returns(FileUploadResponse)
+	
+	// 文件的关联存储
+	@handler UserRepositorySave
+	post /user/repository/save (UserRepositoryRequest) returns(UserRepositoryResponse)
+	
+	// 用户-文件列表
+	@handler UserFileList
+	get /user/file/list (UserFileListRequest)returns(UserFileListResponse)
+	
+	// 用户-文件名称修改
+	@handler UserFileNameModify
+	post /user/file/name/modify(UserFileNameModifyRequest)returns(UserFileNameModifyResponse)
+	
+	// 用户-文件夹创建
+	@handler UserFolderCreate
+	post /user/folder/create(UserFolderCreateRequest)returns(UserFolderCreateResponse)
+	
+	// 用户-文件删除
+	@handler UserFileDelete
+	delete /user/file/delete (UserFileDeleteRequest) returns (UserFileDeleteResponse)
+	
+	// 用户-文件移动
+	@handler UserFileMove
+	put /user/file/move(UserFileMoveRequest)returns(UserFileMoveResponse)
+	
+	// 创建分享记录
+	@handler ShareBasicCreate
+	post /share/basic/create(ShareBasicCreateRequest)returns(ShareBasicCreateResponse)
+	
+	// 资源保存
+	@handler ShareBasicSave
+	post /share/basic/save(ShareBasicSaveRequest)returns(ShareBasicSaveResponse)
+	
+	// 刷新Authorization
+	@handler RefreshAuthorization
+	post /refresh/authorization(RefreshAuthorizationRequest)returns(RefreshAuthorizationResponse)
+}
+
+type LoginRequest {
+	Name     string `json:"name"`
+	Password string `json:"password"`
+}
+
+type LoginResponse {
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
+type UserDetailRequest {
+	Identity int64 `json:"identity"`
+}
+
+type UserDetailResponse {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+}
+
+type MailCodeSendRequest {
+	Email string `json:"email"`
+}
+
+type MailCodeSendResponse {
+}
+
+type UserRegisterRequest {
+	// 用户名
+	Name string `json:"name"`
+	// 密码
+	Password string `json:"password"`
+	// 邮箱
+	Email string `json:"email"`
+	// 验证码
+	Code string `json:"code"`
+}
+
+type UserRegisterResponse {
+	// 用户Id
+	UserId string `json:"user_id"`
+	// 用户名
+	Name string `json:"name"`
+	// 邮箱
+	Email string `json:"email"`
+	// 是否成功
+	Success bool `json:"success"`
+	// 错误信息
+	Error string `json:"error"`
+}
+
+type FileUploadRequest {
+	Hash string `json:"hash,optional"`
+	Name string `json:"name,optional"`
+	Ext  string `json:"ext,optional"`
+	Path string `json:"path,optional"`
+	Size int64  `json:"size,optional"`
+}
+
+type FileUploadResponse {
+	Identity int64  `json:"identity"`
+	Ext      string `json:"ext"`
+	Name     string `json:"name"`
+}
+
+type UserRepositoryRequest {
+	ParentId           int    `json:"parentId"`
+	RepositoryIdentity int64  `json:"repository_identity"`
+	Ext                string `json:"ext"`
+	Name               string `json:"name"`
+}
+
+type UserRepositoryResponse {
+	Identity int64 `json:"identity"`
+}
+
+type UserFileListRequest {
+	Id   int `json:"id,optional"`
+	Page int `json:"page,optional"`
+	Size int `json:"size,optional"`
+}
+
+type UserFile {
+	Id                 int    `json:"id"`
+	Identity           int64  `json:"identity"`
+	RepositoryIdentity int64  `json:"repository_identity"`
+	Name               string `json:"name"`
+	Ext                string `json:"ext"`
+	Path               string `json:"path"`
+	Size               int64  `json:"size"`
+}
+
+type UserFileListResponse {
+	List  []*UserFile `json:"list"`
+	Count int64       `json:"count"`
+}
+
+type UserFileNameModifyRequest {
+	Identity int64  `json:"identity"`
+	Name     string `json:"name"`
+}
+
+type UserFileNameModifyResponse {
+}
+
+type UserFolderCreateRequest {
+	ParentId int    `json:"parent_id"`
+	Name     string `json:"name"`
+}
+
+type UserFolderCreateResponse {
+	Identity int64 `json:"identity"`
+}
+
+type UserFileDeleteRequest {
+	Identity int64 `json:"identity"`
+}
+
+type UserFileDeleteResponse {
+}
+
+type UserFileMoveRequest {
+	Identity       int64 `json:"identity"`
+	ParentIdentity int64 `json:"parent_identity"`
+}
+
+type UserFileMoveResponse {
+}
+
+type ShareBasicCreateRequest {
+	UserRepositoryIdentity int64 `json:"user_repository_identity"`
+	ExpiredTime            int   `json:"expired_time"`
+}
+
+type ShareBasicCreateResponse {
+	Identity int64 `json:"identity"`
+}
+
+type ShareBasicDetailRequest {
+	Identity int64 `json:"identity"`
+}
+
+type ShareBasicDetailResponse {
+	RepositoryIdentity int64  `json:"repository_identity"`
+	Name               string `json:"name"`
+	Ext                string `json:"ext"`
+	Size               int64  `json:"size"`
+	Path               string `json:"path"`
+}
+
+type ShareBasicSaveRequest {
+	RepositoryIdentity int64 `json:"repository_identity"`
+	ParentId           int   `json:"parent_id"`
+}
+
+type ShareBasicSaveResponse {
+	Identity int64 `json:"identity"`
+}
+
+type RefreshAuthorizationRequest {
+}
+
+type RefreshAuthorizationResponse {
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
+}

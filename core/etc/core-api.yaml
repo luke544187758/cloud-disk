@@ -1,0 +1,19 @@
+Name: core-api
+Host: 0.0.0.0
+Port: 8888
+
+MySQL:
+  Host: 127.0.0.1
+  Port: 13306
+  User: root
+  Password: "544187758"
+  DbName: cloud-disk
+  MaxOpenConns: 200
+  MaxIdleConns: 50
+
+Redis:
+  Host: 127.0.0.1
+  Port: 16379
+  DB: 0
+  Password: "544187758"
+  PoolSize: 100
